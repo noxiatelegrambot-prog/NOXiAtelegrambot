@@ -11,6 +11,7 @@ async def initialize_memory(database_path: Path) -> None:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 category TEXT NOT NULL,
                 content TEXT NOT NULL,
+                task_id TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -48,14 +49,15 @@ async def save_memory(
     database_path: Path,
     category: str,
     content: str,
+    task_id: str | None = None,
 ) -> None:
     async with aiosqlite.connect(database_path) as db:
         await db.execute(
             """
-            INSERT INTO memories (category, content)
-            VALUES (?, ?)
+            INSERT INTO memories (category, content, task_id)
+            VALUES (?, ?, ?)
             """,
-            (category, content),
+            (category, content, task_id),
         )
         await db.commit()
 

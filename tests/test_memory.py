@@ -299,3 +299,22 @@ def test_empty_memory_and_invalid_inputs(tmp_path):
         assert len(empty_ex) == 0
 
     asyncio.run(run())
+
+
+def test_memory_with_task_relationship(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        await save_memory(
+            database,
+            category="task_context",
+            content="Context linked to specific task",
+            task_id="task-999"
+        )
+
+        results = await search_memories(database, "specific task")
+        assert len(results) == 1
+        assert results[0][3] == "task-999"
+
+    asyncio.run(run())
