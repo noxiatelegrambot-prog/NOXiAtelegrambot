@@ -70,7 +70,7 @@ async def search_memories(
     async with aiosqlite.connect(database_path) as db:
         cursor = await db.execute(
             """
-            SELECT id, category, content, created_at
+            SELECT id, category, content, task_id, created_at
             FROM memories
             WHERE content LIKE ?
             ORDER BY id DESC
