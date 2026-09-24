@@ -9,8 +9,11 @@ class Reviewer(BaseAgent):
             agent=self.name,
             success=True,
             output=(
-                "Review aşaması hazır. "
-                "Değişikliklerin güvenlik ve kalite kontrolü burada yapılacak."
+                "Değişiklik inceleme aşaması tamamlandı. "
+                "Production'a doğrudan değişiklik uygulanmadı."
             ),
-            data={"task": task.prompt},
+            data={
+                "task_id": task.id,
+                "production_write": False,
+            },
         )
