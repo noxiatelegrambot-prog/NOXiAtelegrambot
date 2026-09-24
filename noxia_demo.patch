@@ -1,0 +1,11 @@
+diff --git a/app/agents/researcher.py b/app/agents/researcher.py
+--- a/app/agents/researcher.py
++++ b/app/agents/researcher.py
+@@ -20,6 +20,7 @@
+                 data={
+                     "task_id": task.id,
+                     "query": result["query"],
+                     "real_web_search": True,
++                    "result_count": len(result["results"]),
+                 },
+             )

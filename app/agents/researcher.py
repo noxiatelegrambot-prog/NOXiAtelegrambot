@@ -19,6 +19,7 @@ class Researcher(BaseAgent):
                     "task_id": task.id,
                     "query": result["query"],
                     "real_web_search": True,
+                    "result_count": len(result["results"]),
                 },
             )
         except Exception as exc:
