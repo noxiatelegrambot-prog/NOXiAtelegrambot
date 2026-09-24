@@ -6,6 +6,7 @@ from uuid import uuid4
 
 class TaskStatus(str, Enum):
     PENDING = "pending"
+    PLANNED = "planned"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
@@ -20,5 +21,6 @@ class Task:
     created_at: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
+    plan: list[str] = field(default_factory=list)
     result: str | None = None
     error: str | None = None
