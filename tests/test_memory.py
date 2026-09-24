@@ -163,3 +163,17 @@ def test_orchestrator_experience_integration(tmp_path):
 
     import asyncio
     asyncio.run(run())
+
+
+def test_memory_category_filtering(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        await save_memory(database, "category_a", "First item")
+        await save_memory(database, "category_b", "Second item")
+
+        results = await search_memories(database, "item")
+        assert len(results) == 2
+
+    asyncio.run(run())
