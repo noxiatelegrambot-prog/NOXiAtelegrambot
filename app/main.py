@@ -2,13 +2,17 @@ import logging
 from pathlib import Path
 
 import aiosqlite
-from telegram import Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
     Application,
+    CallbackQueryHandler,
     CommandHandler,
     ContextTypes,
+    MessageHandler,
+    filters,
 )
 
+from app.ai.providers import AIRouter
 from app.brain.orchestrator import Orchestrator
 from app.config import load_settings
 from app.memory.database import initialize_memory
@@ -35,6 +39,43 @@ async def init_database(database_path: Path) -> None:
         await db.commit()
 
     await initialize_memory(database_path)
+
+
+def main_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "🔎 Araştır",
+                    callback_data="mode:research",
+                ),
+                InlineKeyboardButton(
+                    "💻 Geliştir",
+                    callback_data="mode:develop",
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    "🧪 Test Et",
+                    callback_data="mode:test",
+                ),
+                InlineKeyboardButton(
+                    "🤖 Genel Görev",
+                    callback_data="mode:task",
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    "🧠 AI Durumu",
+                    callback_data="status:ai",
+                ),
+                InlineKeyboardButton(
+                    "⚙️ Sistem",
+                    callback_data="status:system",
+                ),
+            ],
+        ]
+    )
 
 
 async def start_command(
@@ -69,12 +110,13 @@ async def start_command(
         )
         await db.commit()
 
+    context.user_data["mode"] = "task"
+
     await update.message.reply_text(
-        "Merhaba! Ben NOXiA.\n\n"
-        "Araştırma, öğrenme, geliştirme ve test sistemi "
-        "aktif olarak kuruluyor.\n\n"
-        "/help — Komutlar\n"
-        "/status — Sistem durumu"
+        "⚡ NOXiA\n\n"
+        "Görev merkezine hoş geldin.\n"
+        "Aşağıdan bir çalışma modu seç veya doğrudan görevini yaz.",
+        reply_markup=main_keyboard(),
     )
 
 
@@ -86,11 +128,15 @@ async def help_command(
         return
 
     await update.message.reply_text(
-        "NOXiA V0.2\n\n"
-        "/start — Başlat\n"
-        "/help — Yardım\n"
-        "/status — Sistem durumu\n\n"
-        "Normal mesaj göndererek NOXiA'ya görev verebilirsin."
+        "⚡ NOXiA Yardım\n\n"
+        "🔎 Araştır — web araştırması\n"
+        "💻 Geliştir — kontrollü kod değişikliği\n"
+        "🧪 Test Et — gerçek test çalıştırma\n"
+        "🤖 Genel Görev — planner tarafından belirlenir\n\n"
+        "/start — ana menü\n"
+        "/status — sistem durumu\n"
+        "/help — yardım",
+        reply_markup=main_keyboard(),
     )
 
 
@@ -101,14 +147,105 @@ async def status_command(
     if update.message is None:
         return
 
-    settings = context.application.bot_data["settings"]
+    router: AIRouter = context.application.bot_data["ai_router"]
     orchestrator = context.application.bot_data["orchestrator"]
 
-    await update.message.reply_text(
-        "NOXiA çalışıyor.\n\n"
-        f"Environment: {settings.environment}\n"
-        f"Aktif görevler: {len(orchestrator.active_tasks)}"
+    status = router.status()
+
+    lines = [
+        "⚙️ NOXiA Sistem Durumu",
+        "",
+        f"Aktif görevler: {len(orchestrator.active_tasks)}",
+        "",
+        "🧠 AI Provider'ları:",
+    ]
+
+    for name, info in status.items():
+        state = "🟢 hazır" if info["configured"] else "⚪ anahtar yok"
+        lines.append(
+            f"{name}: {state} — {info['model']}"
+        )
+
+    lines.extend(
+        [
+            "",
+            "Fallback sırası:",
+            " → ".join(router.configured()),
+        ]
     )
+
+    await update.message.reply_text(
+        "\n".join(lines),
+        reply_markup=main_keyboard(),
+    )
+
+
+async def callback_handler(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+) -> None:
+    query = update.callback_query
+
+    if query is None:
+        return
+
+    await query.answer()
+
+    data = query.data or ""
+
+    if data.startswith("mode:"):
+        mode = data.split(":", 1)[1]
+        context.user_data["mode"] = mode
+
+        labels = {
+            "research": "🔎 Araştırma modu aktif.\n\nAraştırmak istediğin konuyu yaz.",
+            "develop": "💻 Geliştirme modu aktif.\n\nYapılmasını istediğin kontrollü değişikliği yaz.",
+            "test": "🧪 Test modu aktif.\n\nÇalıştırılmasını istediğin testi veya kontrolü yaz.",
+            "task": "🤖 Genel görev modu aktif.\n\nGörevini yaz.",
+        }
+
+        await query.edit_message_text(
+            labels.get(mode, "Görev modunu seç."),
+            reply_markup=main_keyboard(),
+        )
+        return
+
+    if data == "status:ai":
+        router: AIRouter = context.application.bot_data["ai_router"]
+        status = router.status()
+
+        lines = ["🧠 AI Provider Durumu", ""]
+
+        for name, info in status.items():
+            state = "🟢" if info["configured"] else "⚪"
+            lines.append(
+                f"{state} {name} — {info['model']}"
+            )
+
+        lines.extend(
+            [
+                "",
+                "Fallback:",
+                " → ".join(router.configured()),
+            ]
+        )
+
+        await query.edit_message_text(
+            "\n".join(lines),
+            reply_markup=main_keyboard(),
+        )
+        return
+
+    if data == "status:system":
+        orchestrator = context.application.bot_data["orchestrator"]
+
+        await query.edit_message_text(
+            "⚙️ Sistem\n\n"
+            "🟢 Telegram: aktif\n"
+            "🟢 Orchestrator: aktif\n"
+            f"📋 Aktif görev: {len(orchestrator.active_tasks)}",
+            reply_markup=main_keyboard(),
+        )
 
 
 async def message_handler(
@@ -123,26 +260,51 @@ async def message_handler(
     if not prompt:
         return
 
+    mode = context.user_data.get("mode", "task")
+
+    prefixes = {
+        "research": "[RESEARCH MODE]",
+        "develop": "[DEVELOP MODE]",
+        "test": "[TEST MODE]",
+        "task": "[GENERAL TASK]",
+    }
+
+    prompt = f"{prefixes.get(mode, '[GENERAL TASK]')} {prompt}"
+
     orchestrator: Orchestrator = (
         context.application.bot_data["orchestrator"]
     )
+
+    await update.message.chat.send_action("typing")
 
     task = await orchestrator.run(
         prompt,
         source="telegram",
     )
 
+    if task.status.value == "failed":
+        result = (
+            "❌ Görev başarısız.\n\n"
+            f"{task.error or 'Bilinmeyen hata.'}"
+        )
+    else:
+        result = (
+            "✅ Görev tamamlandı.\n\n"
+            + (
+                task.result
+                or "Görev işlendi fakat sonuç oluşturulamadı."
+            )
+        )
+
     await update.message.reply_text(
-        task.result
-        or "Görev işlendi fakat sonuç oluşturulamadı."
+        result,
+        reply_markup=main_keyboard(),
     )
 
 
 async def post_init(application: Application) -> None:
     settings = application.bot_data["settings"]
-
     await init_database(settings.database_path)
-
     logger.info("Database and memory initialized")
 
 
@@ -161,7 +323,11 @@ def main() -> None:
         ),
     )
 
-    orchestrator = Orchestrator()
+    orchestrator = Orchestrator(
+        database_path=settings.database_path
+    )
+
+    ai_router = AIRouter()
 
     application = (
         Application.builder()
@@ -172,30 +338,27 @@ def main() -> None:
 
     application.bot_data["settings"] = settings
     application.bot_data["orchestrator"] = orchestrator
+    application.bot_data["ai_router"] = ai_router
 
     application.add_handler(
         CommandHandler("start", start_command)
     )
+
     application.add_handler(
         CommandHandler("help", help_command)
     )
+
     application.add_handler(
         CommandHandler("status", status_command)
     )
 
     application.add_handler(
-        __import__(
-            "telegram.ext",
-            fromlist=["MessageHandler"],
-        ).MessageHandler(
-            __import__(
-                "telegram.ext",
-                fromlist=["filters"],
-            ).filters.TEXT
-            & ~__import__(
-                "telegram.ext",
-                fromlist=["filters"],
-            ).filters.COMMAND,
+        CallbackQueryHandler(callback_handler)
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
             message_handler,
         )
     )
