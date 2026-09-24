@@ -20,3 +20,33 @@ def test_simple_orchestrator_agent(tmp_path):
         assert runs[0]["success"] is True
 
     asyncio.run(run())
+
+
+def test_multi_agent_workflow(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        from app.agent.core import ResearcherAgent, SummarizerAgent
+        from app.memory.database import get_agent_runs
+
+        task_id = "task-workflow-001"
+
+        researcher = ResearcherAgent(name="researcher", database_path=database)
+        summarizer = SummarizerAgent(name="summarizer", database_path=database)
+
+        # Step 1: Researcher agent gathers info
+        research_result = await researcher.execute(task_id, "NOXiA autonomous architecture")
+        assert "Researched topic" in research_result
+
+        # Step 2: Summarizer agent processes researcher's output
+        summary_result = await summarizer.execute(task_id, research_result)
+        assert "Summarized: Researched topic" in summary_result
+
+        # Verify audit trails in database
+        runs = await get_agent_runs(database, task_id=task_id)
+        assert len(runs) == 2
+        assert runs[0]["agent"] == "researcher"
+        assert runs[1]["agent"] == "summarizer"
+
+    asyncio.run(run())
