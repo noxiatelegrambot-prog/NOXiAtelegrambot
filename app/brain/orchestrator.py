@@ -166,3 +166,16 @@ class Orchestrator:
 
     def ai_status(self):
         return self.ai_router.status()
+
+
+    def __init__(self, db_path: str = None):
+        self.db_path = db_path
+
+    async def get_relevant_experiences(self, query: str, limit: int = 3) -> list[dict]:
+        """
+        Retrieve relevant past experiences from database based on task query.
+        """
+        from app.memory.database import search_experiences
+        if not self.db_path:
+            return []
+        return await search_experiences(self.db_path, query, limit=limit)
