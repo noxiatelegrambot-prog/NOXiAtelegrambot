@@ -54,3 +54,28 @@ class SummarizerAgent(BaseAgent):
             duration_ms=80
         )
         return output_text
+
+
+class FaultyTestAgent(BaseAgent):
+    async def execute(self, task_id: str, input_text: str) -> str:
+        try:
+            if "fail" in input_text.lower():
+                raise ValueError("Intentional failure for testing")
+            output_text = f"Success: {input_text}"
+            success = True
+        except Exception as e:
+            output_text = str(e)
+            success = False
+
+        await save_agent_run(
+            self.database_path,
+            task_id=task_id,
+            agent=self.name,
+            input_text=input_text,
+            output_text=output_text,
+            success=success,
+            duration_ms=50
+        )
+        if not success:
+            raise ValueError(output_text)
+        return output_text
