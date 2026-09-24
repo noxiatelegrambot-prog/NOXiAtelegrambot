@@ -223,3 +223,79 @@ def test_multiple_agent_runs_and_failures(tmp_path):
         assert "AssertionError" in failure_runs[0]["output_text"]
 
     asyncio.run(run())
+
+
+def test_memory_category_filtering(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        await save_memory(database, "category_a", "First item")
+        await save_memory(database, "category_b", "Second item")
+
+        results = await search_memories(database, "item")
+        assert len(results) == 2
+
+    asyncio.run(run())
+
+
+def test_multiple_agent_runs_and_failures(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        from app.memory.database import save_agent_run, get_agent_runs
+
+        await save_agent_run(
+            database,
+            task_id="task_multi",
+            agent="developer",
+            input_text="Write code",
+            output_text="Code written successfully",
+            success=True,
+            duration_ms=500
+        )
+
+        await save_agent_run(
+            database,
+            task_id="task_multi",
+            agent="tester",
+            input_text="Run tests",
+            output_text="AssertionError: 1 failed",
+            success=False,
+            duration_ms=300
+        )
+
+        runs = await get_agent_runs(database, task_id="task_multi")
+        assert len(runs) == 2
+        
+        success_runs = [r for r in runs if r["success"] is True]
+        failure_runs = [r for r in runs if r["success"] is False]
+        
+        assert len(success_runs) == 1
+        assert success_runs[0]["agent"] == "developer"
+        
+        assert len(failure_runs) == 1
+        assert failure_runs[0]["agent"] == "tester"
+        assert "AssertionError" in failure_runs[0]["output_text"]
+
+    asyncio.run(run())
+
+
+def test_empty_memory_and_invalid_inputs(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        from app.memory.database import search_memories, get_agent_runs, get_experiences
+
+        empty_memories = await search_memories(database, "nonexistent")
+        assert len(empty_memories) == 0
+
+        empty_runs = await get_agent_runs(database, task_id="nonexistent_task")
+        assert len(empty_runs) == 0
+
+        empty_ex = await get_experiences(database, task_id="nonexistent_task")
+        assert len(empty_ex) == 0
+
+    asyncio.run(run())
