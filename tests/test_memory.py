@@ -360,3 +360,43 @@ def test_agent_run_and_memory_relationship(tmp_path):
         assert runs[0]["success"] is True
 
     asyncio.run(run())
+
+
+def test_structured_experience_and_safe_retrieval(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        from app.memory.database import save_experience, get_experiences, search_experiences
+
+        task_id = "task-struct-001"
+
+        # Save structured experience (Madde 24-29)
+        await save_experience(
+            database,
+            task_id=task_id,
+            situation="API rate limit exceeded during research",
+            action="Implemented exponential backoff retry",
+            result="Successfully fetched data after retry",
+            lesson="Always handle rate limits with backoff strategy",
+            success=True
+        )
+
+        # Retrieve experiences
+        exps = await get_experiences(database, task_id=task_id)
+        assert len(exps) == 1
+        
+        # Verify structured fields
+        exp = exps[0]
+        assert exp["situation"] == "API rate limit exceeded during research"
+        assert exp["action"] == "Implemented exponential backoff retry"
+        assert exp["result"] == "Successfully fetched data after retry"
+        assert exp["lesson"] == "Always handle rate limits with backoff strategy"
+        assert exp["success"] is True
+
+        # Safe retrieval abstraction check (Madde 30)
+        search_results = await search_experiences(database, "rate limit")
+        assert len(search_results) > 0
+        assert search_results[0]["task_id"] == task_id
+
+    asyncio.run(run())
