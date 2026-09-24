@@ -303,3 +303,29 @@ async def get_experiences(
             }
             for row in rows
         ]
+
+async def search_experiences(db_path: str, query: str, limit: int = 5) -> list[dict]:
+    """
+    Search experiences using simple keyword/LIKE matching on situation, lesson, or action.
+    """
+    import aiosqlite
+    keywords = [kw.strip() for kw in query.split() if kw.strip()]
+    if not keywords:
+        return []
+
+    async with aiosqlite.connect(db_path) as db:
+        db.row_factory = aiosqlite.Row
+        conditions = []
+        params = []
+        for kw in keywords:
+            conditions.append("(situation LIKE ? OR lesson LIKE ? OR action LIKE ?)")
+            pattern = f"%{kw}%"
+            params.extend([pattern, pattern, pattern])
+        
+        where_clause = " OR ".join(conditions)
+        sql = f"SELECT * FROM experiences WHERE {where_clause} ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+
+        async with db.execute(sql, params) as cursor:
+            rows = await cursor.fetchall()
+            return [dict(row) for row in rows]

@@ -99,3 +99,41 @@ def test_experience_roundtrip(tmp_path):
         assert results[0]["success"] is True
 
     asyncio.run(run())
+
+def test_search_experiences_roundtrip(tmp_path):
+    async def run():
+        from app.memory.database import initialize_memory, save_experience, search_experiences
+        db_file = tmp_path / "test_noxia.db"
+        db_path = str(db_file)
+        
+        await initialize_memory(db_file)
+        
+        await save_experience(
+            db_path,
+            task_id="task_001",
+            situation="Web research failed due to timeout",
+            action="Tried alternative search query",
+            result="Success",
+            lesson="Use fallback source when first source fails",
+            success=True
+        )
+        
+        await save_experience(
+            db_path,
+            task_id="task_002",
+            situation="Database connection error",
+            action="Reconnected to SQLite",
+            result="Success",
+            lesson="Ensure connection close handling",
+            success=True
+        )
+        
+        results = await search_experiences(db_path, "web research timeout")
+        assert len(results) > 0
+        assert "Web research failed" in results[0]["situation"]
+        
+        empty_results = await search_experiences(db_path, "nonexistentquery12345")
+        assert len(empty_results) == 0
+
+    import asyncio
+    asyncio.run(run())
