@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "noxia"
+version = "0.1.0"
+description = "Autonomous Telegram research and development agent"
+requires-python = ">=3.11"
+dependencies = [
+    "python-telegram-bot>=21,<23",
+    "python-dotenv>=1.0,<2",
+    "aiosqlite>=0.20,<1"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
