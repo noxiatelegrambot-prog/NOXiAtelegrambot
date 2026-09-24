@@ -137,3 +137,29 @@ def test_search_experiences_roundtrip(tmp_path):
 
     import asyncio
     asyncio.run(run())
+
+def test_orchestrator_experience_integration(tmp_path):
+    async def run():
+        from app.memory.database import initialize_memory, save_experience, search_experiences
+        db_file = tmp_path / "test_noxia.db"
+        db_path = str(db_file)
+        
+        await initialize_memory(db_file)
+        await save_experience(
+            db_path,
+            task_id="task_prev",
+            situation="Api timeout on provider",
+            action="Switch to fallback provider",
+            result="Success",
+            lesson="Always use fallback when primary fails",
+            success=True
+        )
+        
+        task_query = "Api timeout error"
+        experiences = await search_experiences(db_path, task_query)
+        
+        assert len(experiences) > 0
+        assert "fallback" in experiences[0]["lesson"]
+
+    import asyncio
+    asyncio.run(run())
