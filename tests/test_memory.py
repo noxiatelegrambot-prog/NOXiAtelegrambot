@@ -318,3 +318,45 @@ def test_memory_with_task_relationship(tmp_path):
         assert results[0][3] == "task-999"
 
     asyncio.run(run())
+
+
+def test_agent_run_and_memory_relationship(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        from app.memory.database import save_agent_run, get_agent_runs, save_memory, search_memories
+
+        task_id = "task-chain-001"
+
+        # 1. Save memory linked to task
+        await save_memory(
+            database,
+            category="reasoning",
+            content="Initial reasoning plan for task chain",
+            task_id=task_id
+        )
+
+        # 2. Save agent execution run linked to task
+        await save_agent_run(
+            database,
+            task_id=task_id,
+            agent="researcher",
+            input_text="Research query for chain",
+            output_text="Research findings gathered",
+            success=True,
+            duration_ms=850
+        )
+
+        # Verify both retrieve correctly and link through task_id
+        memories = await search_memories(database, "reasoning")
+        runs = await get_agent_runs(database, task_id=task_id)
+
+        assert len(memories) == 1
+        assert memories[0][3] == task_id
+
+        assert len(runs) == 1
+        assert runs[0]["task_id"] == task_id
+        assert runs[0]["success"] is True
+
+    asyncio.run(run())
