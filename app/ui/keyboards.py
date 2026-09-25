@@ -107,3 +107,19 @@ def get_learning_hub_keyboard():
         [("💡 Başarılı Çözümler", CB_LEARN_SOLUTIONS), ("⬅️ Geri", CB_BACK)],
         [("🏠 Ana Menü", CB_MAIN)]
     ]
+
+# Research Center callback constants
+CB_RES_START = "research_start_action"
+CB_RES_SAVE = "research_save_memory"
+
+def get_research_hub_keyboard():
+    return [
+        [("🔍 Araştırma Başlat", CB_RES_START)],
+        [("⬅️ Geri", CB_BACK), ("🏠 Ana Menü", CB_MAIN)]
+    ]
+
+def get_research_result_keyboard():
+    return [
+        [("💾 Belleğe Kaydet", CB_RES_SAVE)],
+        [("⬅️ Geri", CB_BACK), ("🏠 Ana Menü", CB_MAIN)]
+    ]

@@ -135,3 +135,24 @@ def render_learning_failures_screen(failures: list) -> str:
         f"{listing}\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     )
+
+def render_research_hub_screen() -> str:
+    return (
+        "🔍 **Research Center**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "Enter a topic or query to initiate deep multi-source research:"
+    )
+
+def render_research_results_screen(topic: str, sources: list, summary: str) -> str:
+    if not sources:
+        sources_text = "No sources found."
+    else:
+        sources_text = "\n".join([f"• [{s.get("title")}]({s.get("url")}) — *{s.get("domain")}*" for s in sources])
+
+    return (
+        f"🔍 **Research Results: {topic}**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"📄 **Summary:**\n{summary}\n\n"
+        f"🌐 **Sources ({len(sources)}):**\n{sources_text}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    )

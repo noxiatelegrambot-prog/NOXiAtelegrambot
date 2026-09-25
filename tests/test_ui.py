@@ -143,3 +143,25 @@ def test_learning_hub_screens():
     fail_scr = render_learning_failures_screen([{"task_id": 12, "lesson": "API timeout handling"}])
     assert "Task #12" in fail_scr
     assert "API timeout handling" in fail_scr
+
+from app.ui.keyboards import get_research_hub_keyboard, CB_RES_START, get_research_result_keyboard, CB_RES_SAVE
+from app.ui.screens import render_research_hub_screen, render_research_results_screen
+
+def test_research_center_keyboards():
+    kb = get_research_hub_keyboard()
+    flat_cbs = [cb for row in kb for _, cb in row]
+    assert CB_RES_START in flat_cbs
+
+    res_kb = get_research_result_keyboard()
+    flat_res_cbs = [cb for row in res_kb for _, cb in row]
+    assert CB_RES_SAVE in flat_res_cbs
+
+def test_research_center_screens():
+    hub_scr = render_research_hub_screen()
+    assert "Research Center" in hub_scr
+
+    sample_sources = [{"title": "Ankara Transit", "url": "https://example.com", "domain": "example.com"}]
+    res_scr = render_research_results_screen("Ankara Metro", sample_sources, "Metro lines are expanding.")
+    assert "Ankara Metro" in res_scr
+    assert "Ankara Transit" in res_scr
+    assert "Metro lines are expanding." in res_scr
