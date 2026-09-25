@@ -54,3 +54,15 @@ def get_task_result_keyboard():
         [("🔄 Tekrar Çalıştır", CB_TASK_RETRY), ("📋 Detaylar", CB_TASK_DETAILS)],
         [("🏠 Ana Menü", CB_MAIN)]
     ]
+
+# Active Tasks callback constants
+CB_TASK_CANCEL_ACTION = "task_action_cancel"
+CB_TASK_RESUME_ACTION = "task_action_resume"
+CB_TASK_HISTORY = "task_history_list"
+
+def get_active_task_detail_keyboard(task_id: int):
+    return [
+        [("🛑 İptal Et", f"{CB_TASK_CANCEL_ACTION}_{task_id}"), ("▶️ Devam Et", f"{CB_TASK_RESUME_ACTION}_{task_id}")],
+        [("📜 Geçmiş", CB_TASK_HISTORY), ("⬅️ Geri", CB_BACK)],
+        [("🏠 Ana Menü", CB_MAIN)]
+    ]

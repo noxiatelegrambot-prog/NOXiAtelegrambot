@@ -28,3 +28,32 @@ def render_task_status_screen(task_id: str, status: str, agent: str = "Unassigne
         f"🤖 **Assigned Agent:** {agent}\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     )
+
+def render_active_tasks_screen(tasks: list) -> str:
+    if not tasks:
+        return (
+            "📋 **Active Tasks Center**\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            "🟢 No active tasks currently running."
+        )
+    
+    listing = "\n".join([f"• **ID {t.get("id")}**: {t.get("title")} [{t.get("status")}]" for t in tasks])
+    return (
+        "📋 **Active Tasks Center**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"{listing}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "Select a task to inspect details:"
+    )
+
+def render_task_detail_screen(task_id: int, title: str, status: str, plan: str, elapsed: str, agent: str) -> str:
+    return (
+        f"🔍 **Task Detail [ID: {task_id}]**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"📌 **Title:** {title}\n"
+        f"🔄 **Status:** {status}\n"
+        f"🗺️ **Plan:** {plan}\n"
+        f"⏱️ **Elapsed Time:** {elapsed}\n"
+        f"🤖 **Agent:** {agent}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    )

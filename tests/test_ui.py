@@ -58,3 +58,25 @@ def test_task_center_screens():
     assert "ID: 99" in status_scr
     assert "Running" in status_scr
     assert "Researcher" in status_scr
+
+from app.ui.keyboards import get_active_task_detail_keyboard, CB_TASK_CANCEL_ACTION
+from app.ui.screens import render_active_tasks_screen, render_task_detail_screen
+
+def test_active_tasks_keyboards():
+    kb = get_active_task_detail_keyboard(101)
+    flat_cbs = [cb for row in kb for _, cb in row]
+    assert f"{CB_TASK_CANCEL_ACTION}_101" in flat_cbs
+
+def test_active_tasks_screens():
+    empty_scr = render_active_tasks_screen([])
+    assert "No active tasks" in empty_scr
+
+    sample_tasks = [{"id": 1, "title": "Analyze DB", "status": "running"}]
+    list_scr = render_active_tasks_screen(sample_tasks)
+    assert "Analyze DB" in list_scr
+    assert "ID 1" in list_scr
+
+    detail_scr = render_task_detail_screen(1, "Analyze DB", "running", "Step 1 -> Step 2", "12s", "Developer")
+    assert "Analyze DB" in detail_scr
+    assert "Step 1 -> Step 2" in detail_scr
+    assert "12s" in detail_scr
