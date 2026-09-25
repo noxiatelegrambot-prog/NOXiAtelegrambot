@@ -57,3 +57,35 @@ def render_task_detail_screen(task_id: int, title: str, status: str, plan: str, 
         f"🤖 **Agent:** {agent}\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     )
+
+def render_ai_hub_screen(providers: list) -> str:
+    if not providers:
+        return (
+            "⚡ **AI Command Center**\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            "🟢 No AI providers registered."
+        )
+    
+    rows = []
+    for p in providers:
+        status_icon = "🟢" if p.get("available") else "🔴"
+        rows.append(f"{status_icon} **{p.get("name")}** ({p.get("model")}) — Failures: {p.get("failures", 0)}")
+    
+    listing = "\n".join(rows)
+    return (
+        "⚡ **AI Command Center**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"{listing}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "Active Fallback Chain: OpenRouter ➔ Groq ➔ Gemini ➔ OpenAI"
+    )
+
+def render_ai_test_result_screen(provider: str, success: bool, latency_ms: float) -> str:
+    status_text = "SUCCESS ✅" if success else "FAILED ❌"
+    return (
+        f"🧪 **AI Health Check [{provider}]**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"Status: {status_text}\n"
+        f"Latency: {latency_ms:.1f}ms\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    )

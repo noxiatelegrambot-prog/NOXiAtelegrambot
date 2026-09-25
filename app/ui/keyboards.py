@@ -66,3 +66,15 @@ def get_active_task_detail_keyboard(task_id: int):
         [("📜 Geçmiş", CB_TASK_HISTORY), ("⬅️ Geri", CB_BACK)],
         [("🏠 Ana Menü", CB_MAIN)]
     ]
+
+# AI Hub callback constants
+CB_AI_TEST_CONNECTION = "ai_test_connection"
+CB_AI_TOGGLE_PROVIDER = "ai_toggle_provider"
+CB_AI_CHAIN_VIEW = "ai_chain_view"
+
+def get_ai_hub_keyboard():
+    return [
+        [("🧪 Bağlantıyı Test Et", CB_AI_TEST_CONNECTION), ("🔄 Fallback Zinciri", CB_AI_CHAIN_VIEW)],
+        [("⚙️ Sağlık & Metrikler", "ai_metrics_view"), ("⬅️ Geri", CB_BACK)],
+        [("🏠 Ana Menü", CB_MAIN)]
+    ]

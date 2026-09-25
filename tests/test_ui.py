@@ -80,3 +80,22 @@ def test_active_tasks_screens():
     assert "Analyze DB" in detail_scr
     assert "Step 1 -> Step 2" in detail_scr
     assert "12s" in detail_scr
+
+from app.ui.keyboards import get_ai_hub_keyboard, CB_AI_TEST_CONNECTION
+from app.ui.screens import render_ai_hub_screen, render_ai_test_result_screen
+
+def test_ai_hub_keyboards():
+    kb = get_ai_hub_keyboard()
+    flat_cbs = [cb for row in kb for _, cb in row]
+    assert CB_AI_TEST_CONNECTION in flat_cbs
+
+def test_ai_hub_screens():
+    sample_providers = [{"name": "OpenRouter", "model": "claude-3.5", "available": True, "failures": 0}]
+    screen = render_ai_hub_screen(sample_providers)
+    assert "OpenRouter" in screen
+    assert "claude-3.5" in screen
+
+    test_res = render_ai_test_result_screen("Groq", True, 245.5)
+    assert "Groq" in test_res
+    assert "SUCCESS" in test_res
+    assert "245.5ms" in test_res
