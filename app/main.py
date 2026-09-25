@@ -345,9 +345,9 @@ async def message_handler(
 
 async def register_noxia_commands(application: Application) -> None:
     await application.bot.set_my_commands([
-        ("NOXiA_start", "NOXiA ana menüyü aç"),
-        ("NOXiA_help", "NOXiA yardım"),
-        ("NOXiA_status", "NOXiA sistem durumu"),
+        ("noxia_start", "NOXiA ana menüyü aç"),
+        ("noxia_help", "NOXiA yardım"),
+        ("noxia_status", "NOXiA sistem durumu"),
     ])
 
 
@@ -374,7 +374,7 @@ def main() -> None:
     )
 
     orchestrator = Orchestrator(
-        database_path=settings.database_path
+        db_path=str(settings.database_path)
     )
 
     ai_router = AIRouter()
@@ -395,15 +395,15 @@ def main() -> None:
     application.bot_data["dialogue_engine"] = dialogue_engine
 
     application.add_handler(
-        CommandHandler("NOXiA_start", start_command)
+        CommandHandler("noxia_start", start_command)
     )
 
     application.add_handler(
-        CommandHandler("NOXiA_help", help_command)
+        CommandHandler("noxia_help", help_command)
     )
 
     application.add_handler(
-        CommandHandler("NOXiA_status", status_command)
+        CommandHandler("noxia_status", status_command)
     )
 
     application.add_handler(
