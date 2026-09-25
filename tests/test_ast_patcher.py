@@ -1,6 +1,4 @@
-
-from app.core.dispatcher import TelegramDispatcher # placeholder check
-from update_phase14 import ASTCodePatcher
+from app.core.ast_patcher import ASTCodePatcher
 
 def test_ast_code_patcher_validation():
     patcher = ASTCodePatcher()
