@@ -283,25 +283,6 @@ async def message_handler(
         )
         return
 
-    # Sadece gerçek görevler Orchestrator'a gider.
-    intent = intent_router.transmute(raw_prompt)
-    logger.info("Intent routed | intent=%s | action=%s | confidence=%s",
-                intent.get("intent"), intent.get("transmuted_action"),
-                intent.get("confidence"))
-
-    if intent.get("intent") == "chat":
-        user_id = update.effective_user.id if update.effective_user else 0
-        response = dialogue_engine.generate_response(user_id, prompt)
-        await update.message.reply_text(response, reply_markup=main_keyboard())
-        return
-
-    if intent.get("intent") == "learn":
-        await update.message.reply_text(
-            "🧠 Öğrenme isteği algılandı. Öğrenme sistemi devrede.",
-            reply_markup=main_keyboard(),
-        )
-        return
-
     mode = context.user_data.get("mode", "task")
 
     prefixes = {
