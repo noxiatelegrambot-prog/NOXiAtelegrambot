@@ -1,0 +1,32 @@
+from app.ui.navigation import NavigationStack
+from app.ui.keyboards import get_main_dashboard_keyboard, CB_NEW_TASK
+from app.ui.screens import render_start_screen
+from app.ui.pagination import paginate_items
+
+def test_navigation_stack():
+    nav = NavigationStack()
+    assert nav.current() == "main"
+    nav.push("tasks")
+    assert nav.current() == "tasks"
+    nav.push("task_detail")
+    assert nav.current() == "task_detail"
+    assert nav.pop() == "tasks"
+    assert nav.current() == "tasks"
+
+def test_keyboards_structure():
+    kb = get_main_dashboard_keyboard()
+    flat_callbacks = [cb for row in kb for _, cb in row]
+    assert CB_NEW_TASK in flat_callbacks
+
+def test_screen_rendering():
+    text = render_start_screen("Operational", 3, 42)
+    assert "NOXiA Operational Control Center" in text
+    assert "Active Tasks: 3" in text
+    assert "Memories Stored: 42" in text
+
+def test_pagination():
+    items = list(range(12))
+    page1, has_next = paginate_items(items, page=1, page_size=5)
+    assert len(page1) == 5
+    assert page1 == [0, 1, 2, 3, 4]
+    assert has_next is True
