@@ -49,7 +49,11 @@ async def init_database(database_path: Path) -> None:
 
 
 def main_keyboard() -> InlineKeyboardMarkup:
-    return get_complete_main_dashboard_keyboard()
+    rows = get_complete_main_dashboard_keyboard()
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton(text, callback_data=data) for text, data in row]
+        for row in rows
+    ])
 
 async def start_command(
     update: Update,
