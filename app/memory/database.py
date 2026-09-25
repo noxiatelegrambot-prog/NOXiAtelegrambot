@@ -331,3 +331,13 @@ async def search_experiences(db_path: str, query: str, limit: int = 5) -> list[d
         async with db.execute(sql, params) as cursor:
             rows = await cursor.fetchall()
             return [dict(row) for row in rows]
+
+
+async def get_memories(database_path: Path, task_id: str) -> list:
+    async with aiosqlite.connect(database_path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(
+            "SELECT * FROM memories WHERE task_id = ? ORDER BY id ASC", (task_id,)
+        ) as cursor:
+            rows = await cursor.fetchall()
+            return [dict(row) for row in rows]
