@@ -1,7 +1,11 @@
-from app.core.planner_agent import AutonomousPlanner
+from app.core.planner import Planner
 
-def test_autonomous_planner():
-    plan = AutonomousPlanner.create_execution_plan("Build a telegram plugin")
-    assert plan["status"] == "success"
-    assert len(plan["plan"]) == 3
-    assert plan["plan"][1]["depends_on"] == ["sub_1"]
+def test_planner_intent_classification():
+    res1 = Planner.classify_intent("Lütfen yeni bir python modülü yaz ve kodla")
+    assert res1["intent"] == "coding"
+
+    res2 = Planner.classify_intent("Ankara'daki tarihi yerleri araştır")
+    assert res2["intent"] == "research"
+
+    res3 = Planner.classify_intent("Sistem testlerini çalıştır")
+    assert res3["intent"] == "testing"
