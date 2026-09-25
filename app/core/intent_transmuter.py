@@ -62,6 +62,7 @@ class IntentTransmuter:
                 "transmuted_action": "ignore",
                 "target_subsystem": "none",
                 "confidence": 1.0,
+                "status": "transmuted_successfully",
             }
 
         if text.startswith(self.LEARN_PREFIXES):
@@ -70,6 +71,7 @@ class IntentTransmuter:
                 "transmuted_action": "learn_dialogue",
                 "target_subsystem": "learning_engine",
                 "confidence": 1.0,
+                "status": "transmuted_successfully",
             }
 
         if any(re.match(pattern, text) for pattern in self.CHAT_PATTERNS):
@@ -78,6 +80,7 @@ class IntentTransmuter:
                 "transmuted_action": "generate_dialogue_response",
                 "target_subsystem": "dialogue_engine",
                 "confidence": 1.0,
+                "status": "transmuted_successfully",
             }
 
         for keyword, rule in self.transmutation_rules.items():
@@ -87,6 +90,7 @@ class IntentTransmuter:
                     "transmuted_action": rule["action"],
                     "target_subsystem": rule["target"],
                     "confidence": 0.9,
+                    "status": "transmuted_successfully",
                 }
 
         if any(hint in text for hint in self.TASK_HINTS):
@@ -95,6 +99,7 @@ class IntentTransmuter:
                 "transmuted_action": "execute_standard_task",
                 "target_subsystem": "orchestrator",
                 "confidence": 0.8,
+            "status": "transmuted_successfully",
             }
 
         return {
@@ -102,4 +107,5 @@ class IntentTransmuter:
             "transmuted_action": "generate_dialogue_response",
             "target_subsystem": "dialogue_engine",
             "confidence": 0.55,
+        "status": "transmuted_successfully",
         }
