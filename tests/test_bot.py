@@ -222,3 +222,22 @@ def test_security_audit_log_and_guardrails():
     assert row[1] == "command_execution"
     assert row[2] == "allowed"
     conn.close()
+
+
+def test_telegram_events_handler_layer():
+    import sqlite3
+    conn = sqlite3.connect("noxia.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO telegram_events (chat_id, user_id, command_name, payload) VALUES (?, ?, ?, ?)",
+        ("chat_456", "user_123", "/start", "Initiated interaction")
+    )
+    conn.commit()
+
+    cursor.execute("SELECT chat_id, command_name, payload FROM telegram_events ORDER BY id DESC LIMIT 1")
+    row = cursor.fetchone()
+    assert row is not None
+    assert row[0] == "chat_456"
+    assert row[1] == "/start"
+    assert row[2] == "Initiated interaction"
+    conn.close()
