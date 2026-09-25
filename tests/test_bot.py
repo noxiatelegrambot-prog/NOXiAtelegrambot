@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 from app.memory.database import initialize_memory, get_memories, get_agent_runs
 from app.bot.service import BotService
+from app.bot.handler import TelegramBotHandler
 
 
 def test_bot_service_routing(tmp_path):
