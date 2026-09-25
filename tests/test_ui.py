@@ -33,3 +33,28 @@ def test_pagination():
     assert len(page1) == 5
     assert page1 == [0, 1, 2, 3, 4]
     assert has_next is True
+
+from app.ui.keyboards import get_task_type_keyboard, CB_TASK_RESEARCH, get_task_confirmation_keyboard, CB_TASK_START
+from app.ui.screens import render_new_task_screen, render_task_summary_screen, render_task_status_screen
+
+def test_task_center_keyboards():
+    kb = get_task_type_keyboard()
+    flat_cbs = [cb for row in kb for _, cb in row]
+    assert CB_TASK_RESEARCH in flat_cbs
+
+    conf_kb = get_task_confirmation_keyboard()
+    flat_conf_cbs = [cb for row in conf_kb for _, cb in row]
+    assert CB_TASK_START in flat_conf_cbs
+
+def test_task_center_screens():
+    new_screen = render_new_task_screen()
+    assert "New Task Center" in new_screen
+
+    summary = render_task_summary_screen("Research", "Analyze Ankara public transport")
+    assert "Research" in summary
+    assert "Ankara public transport" in summary
+
+    status_scr = render_task_status_screen("99", "Running", "Researcher")
+    assert "ID: 99" in status_scr
+    assert "Running" in status_scr
+    assert "Researcher" in status_scr
