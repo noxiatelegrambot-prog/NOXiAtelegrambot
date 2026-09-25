@@ -15,8 +15,8 @@ class BotService:
         return agent_cls(name=name, database_path=db_path)
 
     async def handle_message(self, task_id: str, user_message: str) -> str:
-        # Save user interaction memory
-        await save_memory(self.database_path, task_id=task_id, content=f"User: {user_message}")
+        # Save user interaction memory with category
+        await save_memory(self.database_path, task_id=task_id, category="interaction", content=f"User: {user_message}")
 
         # Route through orchestrator or specialized agent based on command/content
         if "research" in user_message.lower():
@@ -26,6 +26,6 @@ class BotService:
         else:
             result = await self.orchestrator.execute(task_id, user_message)
 
-        # Save assistant response memory
-        await save_memory(self.database_path, task_id=task_id, content=f"Assistant: {result}")
+        # Save assistant response memory with category
+        await save_memory(self.database_path, task_id=task_id, category="interaction", content=f"Assistant: {result}")
         return result
