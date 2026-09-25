@@ -15,4 +15,4 @@ def test_dispatcher_bulmaca():
 def test_dispatcher_unknown():
     res = BotDispatcher.route_command("/gecersiz_komut", 999, "boss")
     assert res["route"] == "unknown"
-    assert "Fatoş" in res["text"] or "hat" in res["text"] or "Sistem" in res["text"]
+    assert any(word in res["text"] for word in ["Bilinmeyen", "Eyvah", "Hata", "Sistem", "kahven"])
