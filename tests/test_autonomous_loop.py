@@ -1,11 +1,9 @@
-from app.core.autonomous_loop import AutonomousLoopOrchestrator
+from app.core.autonomous_loop import AutonomousLoop
 
-def test_autonomous_loop_execution():
-    orchestrator = AutonomousLoopOrchestrator()
-    result = orchestrator.run_cycle("HTTP 409 Conflict during polling")
-
-    assert result["status"] == "success"
-    assert result["final_state"] == "committed"
-    assert len(result["log"]) == 5
-    assert "Analyzed error" in result["log"][0]
-    assert "Committed changes" in result["log"][4]
+def test_autonomous_cycle():
+    loop = AutonomousLoop()
+    res = loop.execute_autonomous_cycle("Optimize database queries")
+    assert res["status"] == "success"
+    assert res["iteration"] == 1
+    assert res["goal"] == "Optimize database queries"
+    assert res["next_state"] == "monitoring"
