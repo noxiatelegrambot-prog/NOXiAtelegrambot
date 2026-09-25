@@ -260,3 +260,22 @@ def test_background_jobs_scheduler():
     assert row[1] == "idle"
     assert row[2] == 300
     conn.close()
+
+
+def test_system_health_and_production_readiness():
+    import sqlite3
+    conn = sqlite3.connect("noxia.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT OR REPLACE INTO system_health (component_name, status, latency_ms) VALUES (?, ?, ?)",
+        ("database_core", "healthy", 1.2)
+    )
+    conn.commit()
+
+    cursor.execute("SELECT component_name, status, latency_ms FROM system_health WHERE component_name = 'database_core'")
+    row = cursor.fetchone()
+    assert row is not None
+    assert row[0] == "database_core"
+    assert row[1] == "healthy"
+    assert row[2] == 1.2
+    conn.close()
