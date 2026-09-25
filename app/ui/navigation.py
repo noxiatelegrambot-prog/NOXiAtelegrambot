@@ -1,6 +1,6 @@
 class NavigationStack:
     def __init__(self):
-        self.stack = []
+        self.stack = ["main"]
 
     def push(self, state: str):
         if not self.stack or self.stack[-1] != state:
@@ -8,8 +8,8 @@ class NavigationStack:
 
     def pop(self) -> str:
         if len(self.stack) > 1:
-            return self.stack.pop()
-        return self.stack[0] if self.stack else "main"
+            self.stack.pop()
+        return self.stack[-1] if self.stack else "main"
 
     def current(self) -> str:
         return self.stack[-1] if self.stack else "main"
