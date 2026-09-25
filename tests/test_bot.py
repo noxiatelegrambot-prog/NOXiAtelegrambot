@@ -88,3 +88,25 @@ def test_architecture_documentation_exists():
     with open("ARCHITECTURE.md", "r", encoding="utf-8") as f:
         content = f.read()
     assert "NOXiA Architecture" in content
+
+
+def test_memory_system_schema_and_crud():
+    import sqlite3
+    conn = sqlite3.connect("noxia.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT version FROM schema_versions WHERE version = 1")
+    row = cursor.fetchone()
+    assert row is not None
+
+    cursor.execute(
+        "INSERT INTO memories (category, content, importance, confidence, source) VALUES (?, ?, ?, ?, ?)",
+        ("knowledge", "NOXiA memory system test entry", 5, 0.95, "test_suite")
+    )
+    conn.commit()
+
+    cursor.execute("SELECT content, importance FROM memories WHERE category = 'knowledge' ORDER BY id DESC LIMIT 1")
+    row = cursor.fetchone()
+    assert row is not None
+    assert row[0] == "NOXiA memory system test entry"
+    assert row[1] == 5
+    conn.close()
