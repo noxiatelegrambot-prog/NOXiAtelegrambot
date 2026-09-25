@@ -3,10 +3,11 @@ import datetime
 
 class OrchestratorPipeline:
     @staticmethod
-    get_db_path = lambda: "noxia.db"
+    def get_db_path() -> str:
+        return "noxia.db"
 
     @staticmethod
-    init_pipeline_db():
+    def init_pipeline_db():
         conn = sqlite3.connect(OrchestratorPipeline.get_db_path())
         cursor = conn.cursor()
         cursor.execute('''
@@ -23,7 +24,7 @@ class OrchestratorPipeline:
         conn.close()
 
     @staticmethod
-    execute_task_pipeline(task_id: str, title: str) -> dict:
+    def execute_task_pipeline(task_id: str, title: str) -> dict:
         OrchestratorPipeline.init_pipeline_db()
         conn = sqlite3.connect(OrchestratorPipeline.get_db_path())
         cursor = conn.cursor()
