@@ -1,17 +1,17 @@
+from app.core.swarm_coordinator import SwarmCoordinator
 
-from app.core.swarm import SwarmCoordinator
-
-def test_swarm_coordination_and_blackboard():
+def test_swarm_coordinator_consensus():
     coordinator = SwarmCoordinator()
-    coordinator.register_agent("Researcher")
-    coordinator.register_agent("Developer")
     
-    result = coordinator.coordinate_task("Refactor dispatcher module")
+    # All 4 agents active -> Consensus should be True
+    res = coordinator.evaluate_swarm_consensus("System Boot")
+    assert res["consensus"] is True
+    assert res["action"] == "execute_synchronized_operation"
+
+    # Disable two agents -> Active count drops to 2 (< 3) -> Consensus False
+    coordinator.toggle_agent("security_agent", False)
+    coordinator.toggle_agent("memory_agent", False)
     
-    assert result["status"] == "coordinated"
-    assert result["registered_agents"] == 2
-    assert coordinator.blackboard.read("current_task") == "Refactor dispatcher module"
-    
-    feed = coordinator.blackboard.get_feed()
-    assert len(feed) == 1
-    assert feed[0]["sender"] == "Coordinator"
+    res_degraded = coordinator.evaluate_swarm_consensus("High Security Alert")
+    assert res_degraded["consensus"] is False
+    assert res_degraded["action"] == "halt_operations"
