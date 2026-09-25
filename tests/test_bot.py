@@ -184,3 +184,22 @@ def test_session_context_management():
     assert row[1] == "user_123"
     assert row[2] == "Initial context summary for multi-turn chat"
     conn.close()
+
+
+def test_llm_gateway_metrics_logging():
+    import sqlite3
+    conn = sqlite3.connect("noxia.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO llm_metrics (provider, model_name, prompt_tokens, completion_tokens, status) VALUES (?, ?, ?, ?, ?)",
+        ("openai", "gpt-4o", 150, 75, "success")
+    )
+    conn.commit()
+
+    cursor.execute("SELECT provider, model_name, prompt_tokens FROM llm_metrics ORDER BY id DESC LIMIT 1")
+    row = cursor.fetchone()
+    assert row is not None
+    assert row[0] == "openai"
+    assert row[1] == "gpt-4o"
+    assert row[2] == 150
+    conn.close()
