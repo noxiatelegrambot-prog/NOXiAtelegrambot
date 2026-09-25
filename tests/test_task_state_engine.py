@@ -13,6 +13,11 @@ def test_task_lifecycle_execution():
     task = TaskStateEngine.create_task("task_001", "Refactor codebase")
     assert task["state"] == "pending"
 
+    # Test invalid transition from pending directly to completed
+    res_err = TaskStateEngine.transition_task(task, "completed")
+    assert res_err["status"] == "error"
+    assert task["state"] == "pending"
+
     res1 = TaskStateEngine.transition_task(task, "planned")
     assert res1["status"] == "success"
     assert task["state"] == "planned"
@@ -21,10 +26,6 @@ def test_task_lifecycle_execution():
     assert res2["status"] == "success"
     assert task["state"] == "running"
 
-    res_err = TaskStateEngine.transition_task(task, "completed")
-    assert res_err["status"] == "error" # running -> completed directly requires passing through running -> failed/completed check (running -> completed is valid)
-    # Let's verify running -> completed is valid in definition
-    assert task["state"] == "running"
     res_ok = TaskStateEngine.transition_task(task, "completed")
     assert res_ok["status"] == "success"
     assert task["state"] == "completed"
