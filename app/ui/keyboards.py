@@ -147,3 +147,20 @@ def get_system_hub_keyboard():
         [("🛑 Acil Durdurma", CB_SYS_EMERGENCY_STOP), ("⬅️ Geri", CB_BACK)],
         [("🏠 Ana Menü", CB_MAIN)]
     ]
+
+# Main Dashboard section callbacks
+CB_SEC_AI = "sec_ai_hub"
+CB_SEC_RES = "sec_research_hub"
+CB_SEC_DEV = "sec_dev_hub"
+CB_SEC_TEST = "sec_test_hub"
+CB_SEC_MEM = "sec_memory_hub"
+CB_SEC_TASK = "sec_task_hub"
+CB_SEC_SYS = "sec_system_hub"
+
+def get_complete_main_dashboard_keyboard():
+    return [
+        [("🤖 AI Merkezi", CB_SEC_AI), ("🔍 Araştırma", CB_SEC_RES)],
+        [("💻 Geliştirici", CB_SEC_DEV), ("🧪 Test Merkezi", CB_SEC_TEST)],
+        [("🧠 Bellek & Öğrenme", CB_SEC_MEM), ("📋 Görevler", CB_SEC_TASK)],
+        [("⚙️ Sistem Yönetimi", CB_SEC_SYS)]
+    ]

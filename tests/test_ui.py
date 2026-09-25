@@ -203,3 +203,11 @@ def test_system_hub_screens():
     assert "Database Size:" in metrics_scr
     assert "4.85 MB" in metrics_scr
     assert "3d 14h" in metrics_scr
+
+from app.ui.keyboards import get_complete_main_dashboard_keyboard, CB_SEC_AI, CB_SEC_SYS
+
+def test_complete_main_dashboard_keyboard():
+    kb = get_complete_main_dashboard_keyboard()
+    flat_cbs = [cb for row in kb for _, cb in row]
+    assert CB_SEC_AI in flat_cbs
+    assert CB_SEC_SYS in flat_cbs
