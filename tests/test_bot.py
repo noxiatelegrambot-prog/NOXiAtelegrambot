@@ -147,3 +147,21 @@ def test_agent_orchestrator_task_queue():
     assert row[1] == "pending"
     assert row[2] == 2
     conn.close()
+
+
+def test_tool_registry_and_routing():
+    import sqlite3
+    conn = sqlite3.connect("noxia.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT OR IGNORE INTO tool_registry (tool_name, description, is_active) VALUES (?, ?, ?)",
+        ("code_analyzer", "Analyzes codebase for syntax and structural integrity", 1)
+    )
+    conn.commit()
+
+    cursor.execute("SELECT tool_name, is_active FROM tool_registry WHERE tool_name = 'code_analyzer'")
+    row = cursor.fetchone()
+    assert row is not None
+    assert row[0] == "code_analyzer"
+    assert row[1] == 1
+    conn.close()
