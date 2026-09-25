@@ -165,3 +165,21 @@ def test_research_center_screens():
     assert "Ankara Metro" in res_scr
     assert "Ankara Transit" in res_scr
     assert "Metro lines are expanding." in res_scr
+
+from app.ui.keyboards import get_dev_hub_keyboard, CB_DEV_ANALYZE
+from app.ui.screens import render_dev_hub_screen, render_code_analysis_screen
+
+def test_dev_hub_keyboards():
+    kb = get_dev_hub_keyboard()
+    flat_cbs = [cb for row in kb for _, cb in row]
+    assert CB_DEV_ANALYZE in flat_cbs
+
+def test_dev_hub_screens():
+    hub_scr = render_dev_hub_screen()
+    assert "Development & Code Analysis Center" in hub_scr
+
+    analysis_scr = render_code_analysis_screen("main.py", 2, 92, ["Optimize imports", "Add type hints"])
+    assert "main.py" in analysis_scr
+    assert "Issues Found: 2" in analysis_scr
+    assert "Quality Score: 92/100" in analysis_scr
+    assert "Optimize imports" in analysis_scr

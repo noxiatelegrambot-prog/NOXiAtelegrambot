@@ -123,3 +123,15 @@ def get_research_result_keyboard():
         [("💾 Belleğe Kaydet", CB_RES_SAVE)],
         [("⬅️ Geri", CB_BACK), ("🏠 Ana Menü", CB_MAIN)]
     ]
+
+# Dev & Code Analysis callback constants
+CB_DEV_ANALYZE = "dev_analyze_code"
+CB_DEV_DIFF = "dev_view_diff"
+CB_DEV_APPLY = "dev_apply_patch"
+
+def get_dev_hub_keyboard():
+    return [
+        [("💻 Kod Analizi", CB_DEV_ANALYZE), ("📋 Diff Görüntüle", CB_DEV_DIFF)],
+        [("🚀 Yama Uygula", CB_DEV_APPLY), ("⬅️ Geri", CB_BACK)],
+        [("🏠 Ana Menü", CB_MAIN)]
+    ]

@@ -156,3 +156,25 @@ def render_research_results_screen(topic: str, sources: list, summary: str) -> s
         f"🌐 **Sources ({len(sources)}):**\n{sources_text}\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     )
+
+def render_dev_hub_screen() -> str:
+    return (
+        "💻 **Development & Code Analysis Center**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "Select an operation to review repository health, check syntax, or apply automated patches:"
+    )
+
+def render_code_analysis_screen(filename: str, issues_count: int, quality_score: int, suggestions: list) -> str:
+    if not suggestions:
+        sug_text = "No refactoring suggestions."
+    else:
+        sug_text = "\n".join([f"• {s}" for s in suggestions])
+
+    return (
+        f"💻 **Code Analysis: {filename}**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"⚠️ **Issues Found:** {issues_count}\n"
+        f"⭐ **Quality Score:** {quality_score}/100\n\n"
+        f"💡 **Suggestions:**\n{sug_text}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    )
