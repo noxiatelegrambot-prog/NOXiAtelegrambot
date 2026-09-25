@@ -78,3 +78,20 @@ def get_ai_hub_keyboard():
         [("⚙️ Sağlık & Metrikler", "ai_metrics_view"), ("⬅️ Geri", CB_BACK)],
         [("🏠 Ana Menü", CB_MAIN)]
     ]
+
+# Memory Center callback constants
+CB_MEM_SEARCH = "memory_search"
+CB_MEM_LIST = "memory_list"
+CB_MEM_DELETE = "memory_delete"
+
+def get_memory_hub_keyboard():
+    return [
+        [("🔍 Bellek Ara", CB_MEM_SEARCH), ("📚 Tüm Bellekler", CB_MEM_LIST)],
+        [("⬅️ Geri", CB_BACK), ("🏠 Ana Menü", CB_MAIN)]
+    ]
+
+def get_memory_detail_keyboard(memory_id: int):
+    return [
+        [("🗑️ Sil", f"{CB_MEM_DELETE}_{memory_id}")],
+        [("⬅️ Geri", CB_BACK), ("🏠 Ana Menü", CB_MAIN)]
+    ]

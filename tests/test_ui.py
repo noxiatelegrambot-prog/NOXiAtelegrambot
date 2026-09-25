@@ -99,3 +99,25 @@ def test_ai_hub_screens():
     assert "Groq" in test_res
     assert "SUCCESS" in test_res
     assert "245.5ms" in test_res
+
+from app.ui.keyboards import get_memory_hub_keyboard, CB_MEM_SEARCH, get_memory_detail_keyboard
+from app.ui.screens import render_memory_hub_screen, render_memory_detail_screen
+
+def test_memory_hub_keyboards():
+    kb = get_memory_hub_keyboard()
+    flat_cbs = [cb for row in kb for _, cb in row]
+    assert CB_MEM_SEARCH in flat_cbs
+
+    detail_kb = get_memory_detail_keyboard(42)
+    flat_detail_cbs = [cb for row in detail_kb for _, cb in row]
+    assert "memory_delete_42" in flat_detail_cbs
+
+def test_memory_hub_screens():
+    hub_scr = render_memory_hub_screen(150, 25)
+    assert "Total Memories: 150" in hub_scr
+    assert "Recorded Experiences: 25" in hub_scr
+
+    detail_scr = render_memory_detail_screen(42, "architecture", "SQLite persistence layer", "Telegram Bot")
+    assert "ID: 42" in detail_scr
+    assert "architecture" in detail_scr
+    assert "SQLite persistence layer" in detail_scr

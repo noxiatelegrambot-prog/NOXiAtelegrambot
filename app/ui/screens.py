@@ -89,3 +89,23 @@ def render_ai_test_result_screen(provider: str, success: bool, latency_ms: float
         f"Latency: {latency_ms:.1f}ms\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     )
+
+def render_memory_hub_screen(total_memories: int, total_experiences: int) -> str:
+    return (
+        "🧠 **Memory & Learning Center**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"📦 **Total Memories:** {total_memories}\n"
+        f"🎯 **Recorded Experiences:** {total_experiences}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "Select an option to browse or search long-term storage:"
+    )
+
+def render_memory_detail_screen(memory_id: int, category: str, content: str, source: str) -> str:
+    return (
+        f"🧠 **Memory Detail [ID: {memory_id}]**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"📂 **Category:** {category}\n"
+        f"📝 **Content:** {content}\n"
+        f"🔗 **Source:** {source}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    )
