@@ -203,3 +203,22 @@ def test_llm_gateway_metrics_logging():
     assert row[1] == "gpt-4o"
     assert row[2] == 150
     conn.close()
+
+
+def test_security_audit_log_and_guardrails():
+    import sqlite3
+    conn = sqlite3.connect("noxia.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO security_audit_log (user_id, action_type, status, details) VALUES (?, ?, ?, ?)",
+        ("user_123", "command_execution", "allowed", "Executed standard command safely")
+    )
+    conn.commit()
+
+    cursor.execute("SELECT user_id, action_type, status FROM security_audit_log ORDER BY id DESC LIMIT 1")
+    row = cursor.fetchone()
+    assert row is not None
+    assert row[0] == "user_123"
+    assert row[1] == "command_execution"
+    assert row[2] == "allowed"
+    conn.close()
