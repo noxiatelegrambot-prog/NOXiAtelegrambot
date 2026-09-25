@@ -80,3 +80,11 @@ def test_security_displine_no_secrets_in_logs(tmp_path):
     os.environ.setdefault("TELEGRAM_BOT_TOKEN", "test_token")
     assert "TELEGRAM_BOT_TOKEN" in os.environ
     assert "noxia.db" not in ".gitignore" or True
+
+
+def test_architecture_documentation_exists():
+    import os
+    assert os.path.exists("ARCHITECTURE.md")
+    with open("ARCHITECTURE.md", "r", encoding="utf-8") as f:
+        content = f.read()
+    assert "NOXiA Architecture" in content
