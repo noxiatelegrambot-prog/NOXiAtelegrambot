@@ -65,7 +65,7 @@ def test_system_metrics_tracking(tmp_path):
 
         service = BotService(database_path=database)
         await service.handle_message("task-m-1", "research performance metrics")
-        
+
         metrics = await get_system_metrics(database)
         assert metrics["total_memories"] >= 2
         assert metrics["total_runs"] >= 1
