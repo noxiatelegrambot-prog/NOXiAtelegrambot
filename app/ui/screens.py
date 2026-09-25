@@ -109,3 +109,29 @@ def render_memory_detail_screen(memory_id: int, category: str, content: str, sou
         f"🔗 **Source:** {source}\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     )
+
+def render_learning_hub_screen(total_exp: int, success_count: int, failure_count: int) -> str:
+    return (
+        "💡 **Learning & Experience Center**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"📚 **Total Experiences:** {total_exp}\n"
+        f"✅ **Successful Solutions:** {success_count}\n"
+        f"❌ **Recorded Failures:** {failure_count}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "Inspect what NOXiA learned from past executions:"
+    )
+
+def render_learning_failures_screen(failures: list) -> str:
+    if not failures:
+        return (
+            "❌ **Recent Failures**\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            "🟢 No recent failures recorded."
+        )
+    listing = "\n".join([f"• **Task #{f.get("task_id")}**: {f.get("lesson")}" for f in failures])
+    return (
+        "❌ **Recent Failures & Lessons**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"{listing}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    )

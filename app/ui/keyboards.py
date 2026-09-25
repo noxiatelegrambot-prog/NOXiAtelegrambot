@@ -95,3 +95,15 @@ def get_memory_detail_keyboard(memory_id: int):
         [("🗑️ Sil", f"{CB_MEM_DELETE}_{memory_id}")],
         [("⬅️ Geri", CB_BACK), ("🏠 Ana Menü", CB_MAIN)]
     ]
+
+# Learning Center callback constants
+CB_LEARN_STATS = "learning_stats"
+CB_LEARN_ERRORS = "learning_errors"
+CB_LEARN_SOLUTIONS = "learning_solutions"
+
+def get_learning_hub_keyboard():
+    return [
+        [("📊 Öğrenme İstatistikleri", CB_LEARN_STATS), ("❌ Son Hatalar", CB_LEARN_ERRORS)],
+        [("💡 Başarılı Çözümler", CB_LEARN_SOLUTIONS), ("⬅️ Geri", CB_BACK)],
+        [("🏠 Ana Menü", CB_MAIN)]
+    ]

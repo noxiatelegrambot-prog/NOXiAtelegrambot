@@ -122,3 +122,24 @@ def test_memory_hub_screens():
     assert "ID: 42" in detail_scr
     assert "architecture" in detail_scr
     assert "SQLite persistence layer" in detail_scr
+
+from app.ui.keyboards import get_learning_hub_keyboard, CB_LEARN_STATS
+from app.ui.screens import render_learning_hub_screen, render_learning_failures_screen
+
+def test_learning_hub_keyboards():
+    kb = get_learning_hub_keyboard()
+    flat_cbs = [cb for row in kb for _, cb in row]
+    assert CB_LEARN_STATS in flat_cbs
+
+def test_learning_hub_screens():
+    hub_scr = render_learning_hub_screen(80, 70, 10)
+    assert "Total Experiences:" in hub_scr
+    assert "80" in hub_scr
+    assert "Successful Solutions:" in hub_scr
+    assert "70" in hub_scr
+    assert "Recorded Failures:" in hub_scr
+    assert "10" in hub_scr
+
+    fail_scr = render_learning_failures_screen([{"task_id": 12, "lesson": "API timeout handling"}])
+    assert "Task #12" in fail_scr
+    assert "API timeout handling" in fail_scr
