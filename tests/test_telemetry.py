@@ -1,13 +1,14 @@
-from app.core.telemetry import TelemetryEngine
+from app.core.telemetry_analyzer import DeepTelemetryAnalyzer
 
-def test_telemetry_engine_metrics():
-    telemetry = TelemetryEngine()
-    metric = telemetry.record_metric("response_time", 45.2, "ms")
-    
-    assert metric["name"] == "response_time"
-    assert metric["value"] == 45.2
-    assert telemetry.get_uptime() >= 0.0
+def test_deep_telemetry_analyzer():
+    analyzer = DeepTelemetryAnalyzer()
 
-    summary = telemetry.get_summary()
-    assert summary["total_metrics_recorded"] == 1
-    assert len(summary["recent_metrics"]) == 1
+    # Collect snapshot with zero errors (Stable)
+    snap = analyzer.collect_snapshot(active_modules_count=34, error_count=0)
+    assert snap["status"] == "stable"
+    assert analyzer.get_system_health_score() == 100.0
+
+    # Collect snapshot with errors (Degraded)
+    snap_err = analyzer.collect_snapshot(active_modules_count=34, error_count=2)
+    assert snap_err["status"] == "degraded"
+    assert analyzer.get_system_health_score() == 70.0
