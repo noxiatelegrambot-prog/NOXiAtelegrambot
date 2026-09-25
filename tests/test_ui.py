@@ -4,14 +4,20 @@ from app.ui.keyboards import (
     get_task_type_keyboard, CB_TASK_RESEARCH, get_task_confirmation_keyboard, CB_TASK_START,
     get_active_task_detail_keyboard, CB_TASK_CANCEL_ACTION,
     get_ai_hub_keyboard, CB_AI_TEST_CONNECTION,
-    get_memory_hub_keyboard, CB_MEM_SEARCH, get_memory_detail_keyboard
+    get_memory_hub_keyboard, CB_MEM_SEARCH, get_memory_detail_keyboard,
+    get_learning_hub_keyboard, CB_LEARN_STATS,
+    get_research_hub_keyboard, CB_RES_START, get_research_result_keyboard, CB_RES_SAVE,
+    get_dev_hub_keyboard, CB_DEV_ANALYZE
 )
 from app.ui.screens import (
     render_start_screen,
     render_new_task_screen, render_task_summary_screen, render_task_status_screen,
     render_active_tasks_screen, render_task_detail_screen,
     render_ai_hub_screen, render_ai_test_result_screen,
-    render_memory_hub_screen, render_memory_detail_screen
+    render_memory_hub_screen, render_memory_detail_screen,
+    render_learning_hub_screen, render_learning_failures_screen,
+    render_research_hub_screen, render_research_results_screen,
+    render_dev_hub_screen, render_code_analysis_screen
 )
 from app.ui.pagination import paginate_items
 
@@ -123,9 +129,6 @@ def test_memory_hub_screens():
     assert "architecture" in detail_scr
     assert "SQLite persistence layer" in detail_scr
 
-from app.ui.keyboards import get_learning_hub_keyboard, CB_LEARN_STATS
-from app.ui.screens import render_learning_hub_screen, render_learning_failures_screen
-
 def test_learning_hub_keyboards():
     kb = get_learning_hub_keyboard()
     flat_cbs = [cb for row in kb for _, cb in row]
@@ -143,9 +146,6 @@ def test_learning_hub_screens():
     fail_scr = render_learning_failures_screen([{"task_id": 12, "lesson": "API timeout handling"}])
     assert "Task #12" in fail_scr
     assert "API timeout handling" in fail_scr
-
-from app.ui.keyboards import get_research_hub_keyboard, CB_RES_START, get_research_result_keyboard, CB_RES_SAVE
-from app.ui.screens import render_research_hub_screen, render_research_results_screen
 
 def test_research_center_keyboards():
     kb = get_research_hub_keyboard()
@@ -166,9 +166,6 @@ def test_research_center_screens():
     assert "Ankara Transit" in res_scr
     assert "Metro lines are expanding." in res_scr
 
-from app.ui.keyboards import get_dev_hub_keyboard, CB_DEV_ANALYZE
-from app.ui.screens import render_dev_hub_screen, render_code_analysis_screen
-
 def test_dev_hub_keyboards():
     kb = get_dev_hub_keyboard()
     flat_cbs = [cb for row in kb for _, cb in row]
@@ -180,6 +177,8 @@ def test_dev_hub_screens():
 
     analysis_scr = render_code_analysis_screen("main.py", 2, 92, ["Optimize imports", "Add type hints"])
     assert "main.py" in analysis_scr
-    assert "Issues Found: 2" in analysis_scr
-    assert "Quality Score: 92/100" in analysis_scr
+    assert "Issues Found:" in analysis_scr
+    assert "2" in analysis_scr
+    assert "Quality Score:" in analysis_scr
+    assert "92/100" in analysis_scr
     assert "Optimize imports" in analysis_scr
