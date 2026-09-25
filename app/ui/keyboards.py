@@ -164,3 +164,9 @@ def get_complete_main_dashboard_keyboard():
         [("🧠 Bellek & Öğrenme", CB_SEC_MEM), ("📋 Görevler", CB_SEC_TASK)],
         [("⚙️ Sistem Yönetimi", CB_SEC_SYS)]
     ]
+
+def get_ai_provider_keyboard(provider_name: str):
+    return [
+        [("🔄 Test Et", f"ai_test_{provider_name}"), ("⚙️ Yapılandır", f"ai_config_{provider_name}")],
+        [("⬅️ Geri", CB_BACK), ("🏠 Ana Menü", CB_MAIN)]
+    ]

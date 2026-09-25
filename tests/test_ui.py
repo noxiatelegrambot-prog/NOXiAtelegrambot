@@ -211,3 +211,24 @@ def test_complete_main_dashboard_keyboard():
     flat_cbs = [cb for row in kb for _, cb in row]
     assert CB_SEC_AI in flat_cbs
     assert CB_SEC_SYS in flat_cbs
+
+from app.ui.keyboards import get_ai_provider_keyboard
+from app.ui.screens import render_ai_center_detailed_screen
+
+def test_ai_provider_keyboard():
+    kb = get_ai_provider_keyboard("OpenAI")
+    flat_cbs = [cb for row in kb for _, cb in row]
+    assert "ai_test_OpenAI" in flat_cbs
+
+def test_ai_center_detailed_screen():
+    router_status = {"active_provider": "OpenRouter", "fallback_mode": True}
+    providers = [
+        {"name": "OpenAI", "model": "gpt-4o", "available": True, "failures": 0, "cooldown": 0},
+        {"name": "Groq", "model": "llama-3", "available": False, "failures": 2, "cooldown": 30}
+    ]
+    scr = render_ai_center_detailed_screen(router_status, providers)
+    assert "OpenRouter" in scr
+    assert "OpenAI" in scr
+    assert "Groq" in scr
+    assert "Failures: 2" in scr
+    assert "Cooldown: 30s" in scr

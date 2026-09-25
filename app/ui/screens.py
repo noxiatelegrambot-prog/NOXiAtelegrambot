@@ -196,3 +196,24 @@ def render_system_metrics_screen(cpu_pct: float, ram_mb: float, db_size_mb: floa
         f"⏱️ **Uptime:** {uptime}\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     )
+
+def render_ai_center_detailed_screen(router_status: dict, providers: list) -> str:
+    prov_lines = []
+    for p in providers:
+        status_icon = "🟢" if p.get("available") else "🔴"
+        cooldown_val = p.get("cooldown")
+        cooldown_text = f" (Cooldown: {cooldown_val}s)" if cooldown_val else ""
+        prov_lines.append(f"{status_icon} **{p.get('name')}** [{p.get('model')}] - Failures: {p.get('failures', 0)}{cooldown_text}")
+    
+    prov_text = "\n".join(prov_lines) if prov_lines else "No providers configured."
+    active_prov = router_status.get("active_provider", "None")
+    fallback_mode = router_status.get("fallback_mode", True)
+
+    return (
+        "🤖 **AI Router & Center Status**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"⚡ **Active Provider:** {active_prov}\n"
+        f"🔄 **Fallback Mode:** {'Enabled ✅' if fallback_mode else 'Disabled ❌'}\n\n"
+        f"🌐 **Providers Status:**\n{prov_text}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    )
