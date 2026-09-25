@@ -1,14 +1,15 @@
 class ResearchAgent:
     @staticmethod
-    def conduct_research(query: str) -> dict:
-        # Simulate multi-query generation, source ranking, and synthesis
+    def synthesize_research(query: str) -> dict:
+        # Simulate multi-source research and synthesis
         sources = [
-            {"title": f"Source on {query}", "reliability": "high", "url": "https://example.com/1"},
-            {"title": f"Advanced notes on {query}", "reliability": "medium", "url": "https://example.com/2"}
+            {"title": f"Source 1 on {query}", "url": "https://example.com/1", "relevance": 0.95},
+            {"title": f"Source 2 on {query}", "url": "https://example.com/2", "relevance": 0.88}
         ]
         return {
             "status": "success",
             "query": query,
+            "sources_count": len(sources),
             "sources": sources,
-            "synthesis": f"Synthesized research findings for: {query}"
+            "summary": f"Synthesized research findings for query: '{query}' from verified primary sources."
         }

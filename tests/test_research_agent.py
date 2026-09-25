@@ -1,7 +1,8 @@
 from app.core.research_agent import ResearchAgent
 
-def test_research_agent():
-    res = ResearchAgent.conduct_research("Python async generators")
+def test_research_synthesis():
+    res = ResearchAgent.synthesize_research("Python async best practices")
     assert res["status"] == "success"
-    assert len(res["sources"]) == 2
-    assert "Synthesized" in res["synthesis"]
+    assert res["sources_count"] == 2
+    assert "Python async best practices" in res["query"]
+    assert "Synthesized research findings" in res["summary"]
