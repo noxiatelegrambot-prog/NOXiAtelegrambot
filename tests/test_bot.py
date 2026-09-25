@@ -33,3 +33,22 @@ def test_bot_service_routing(tmp_path):
         assert len(runs) == 3
 
     asyncio.run(run())
+
+
+def test_telegram_bot_handler(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        handler = TelegramBotHandler(database_path=database, token="test_token")
+        chat_id = "123456789"
+
+        # Test message processing through handler
+        reply = await handler.process_incoming_message(chat_id, "research telegram bot architecture")
+        assert "Researched topic" in reply
+
+        # Test another message
+        reply2 = await handler.process_incoming_message(chat_id, "summarize previous findings")
+        assert "Summarized" in reply2
+
+    asyncio.run(run())
