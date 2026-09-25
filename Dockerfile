@@ -1,12 +1,10 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY pyproject.toml .
-COPY app ./app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install --no-cache-dir .
+COPY . .
 
-ENV PYTHONUNBUFFERED=1
-
-CMD ["python", "-m", "app.main"]
+CMD ["python", "main.py"]
