@@ -16,6 +16,9 @@ from app.ai.providers import AIRouter
 from app.brain.orchestrator import Orchestrator
 from app.config import load_settings
 from app.memory.database import initialize_memory
+from app.ui.keyboards import get_complete_main_dashboard_keyboard
+from app.core.intent_transmuter import IntentTransmuter
+from app.core.dialogue_engine import DialogueEngine
 
 
 logger = logging.getLogger("noxia")
@@ -42,41 +45,7 @@ async def init_database(database_path: Path) -> None:
 
 
 def main_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton(
-                    "🔎 Araştır",
-                    callback_data="mode:research",
-                ),
-                InlineKeyboardButton(
-                    "💻 Geliştir",
-                    callback_data="mode:develop",
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    "🧪 Test Et",
-                    callback_data="mode:test",
-                ),
-                InlineKeyboardButton(
-                    "🤖 Genel Görev",
-                    callback_data="mode:task",
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    "🧠 AI Durumu",
-                    callback_data="status:ai",
-                ),
-                InlineKeyboardButton(
-                    "⚙️ Sistem",
-                    callback_data="status:system",
-                ),
-            ],
-        ]
-    )
-
+    return get_complete_main_dashboard_keyboard()
 
 async def start_command(
     update: Update,
@@ -255,11 +224,62 @@ async def message_handler(
     if update.message is None or not update.message.text:
         return
 
-    prompt = update.message.text.strip()
-
-    if not prompt:
+    raw_prompt = update.message.text.strip()
+    if not raw_prompt:
         return
 
+    transmuter: IntentTransmuter = (
+        context.application.bot_data["intent_transmuter"]
+    )
+    dialogue: DialogueEngine = (
+        context.application.bot_data["dialogue_engine"]
+    )
+
+    intent = transmuter.transmute(raw_prompt)
+    intent_type = intent.get("intent", "task")
+
+    # Öğrenme mesajı: "Öğren: tetikleyici -> cevap"
+    if intent_type == "learn":
+        body = raw_prompt.split(":", 1)[1].strip()
+        if "->" in body:
+            trigger, response = body.split("->", 1)
+            trigger = trigger.strip()
+            response = response.strip()
+
+            if trigger and response:
+                dialogue.learn_response(trigger, response)
+                await update.message.reply_text(
+                    f"🧠 Öğrenildi.\n\n"
+                    f"🔑 Tetikleyici: {trigger}\n"
+                    f"💬 Yanıt: {response}",
+                    reply_markup=main_keyboard(),
+                )
+                return
+
+        await update.message.reply_text(
+            "🧠 Öğrenme formatı:\n\n"
+            "Öğren: merhaba -> Selam! Nasılsın?",
+            reply_markup=main_keyboard(),
+        )
+        return
+
+    # Normal sohbet: Orchestrator'a görev oluşturma.
+    if intent_type == "chat":
+        user = update.effective_user
+        user_id = user.id if user else 0
+
+        response = dialogue.generate_response(
+            user_id,
+            raw_prompt,
+        )
+
+        await update.message.reply_text(
+            response,
+            reply_markup=main_keyboard(),
+        )
+        return
+
+    # Sadece gerçek görevler Orchestrator'a gider.
     mode = context.user_data.get("mode", "task")
 
     prefixes = {
@@ -269,7 +289,7 @@ async def message_handler(
         "task": "[GENERAL TASK]",
     }
 
-    prompt = f"{prefixes.get(mode, '[GENERAL TASK]')} {prompt}"
+    prompt = f"{prefixes.get(mode, '[GENERAL TASK]')} {raw_prompt}"
 
     orchestrator: Orchestrator = (
         context.application.bot_data["orchestrator"]
@@ -301,8 +321,16 @@ async def message_handler(
         reply_markup=main_keyboard(),
     )
 
+async def register_noxia_commands(application: Application) -> None:
+    await application.bot.set_my_commands([
+        ("NOXiA_start", "NOXiA ana menüyü aç"),
+        ("NOXiA_help", "NOXiA yardım"),
+        ("NOXiA_status", "NOXiA sistem durumu"),
+    ])
+
 
 async def post_init(application: Application) -> None:
+    await register_noxia_commands(application)
     settings = application.bot_data["settings"]
     await init_database(settings.database_path)
     logger.info("Database and memory initialized")
@@ -328,6 +356,8 @@ def main() -> None:
     )
 
     ai_router = AIRouter()
+    intent_transmuter = IntentTransmuter()
+    dialogue_engine = DialogueEngine()
 
     application = (
         Application.builder()
@@ -339,17 +369,19 @@ def main() -> None:
     application.bot_data["settings"] = settings
     application.bot_data["orchestrator"] = orchestrator
     application.bot_data["ai_router"] = ai_router
+    application.bot_data["intent_transmuter"] = intent_transmuter
+    application.bot_data["dialogue_engine"] = dialogue_engine
 
     application.add_handler(
-        CommandHandler("start", start_command)
+        CommandHandler("NOXiA_start", start_command)
     )
 
     application.add_handler(
-        CommandHandler("help", help_command)
+        CommandHandler("NOXiA_help", help_command)
     )
 
     application.add_handler(
-        CommandHandler("status", status_command)
+        CommandHandler("NOXiA_status", status_command)
     )
 
     application.add_handler(
