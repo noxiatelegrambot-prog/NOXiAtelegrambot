@@ -3,8 +3,8 @@ import re
 class SecurityGuard:
     @staticmethod
     def redact_sensitive_data(text: str) -> str:
-        # Mask OpenAI keys and Telegram bot tokens in logs/text
-        redacted = re.sub(r'(sk-[a-zA-Z0-9]{20,})', '***REDACTED_API_KEY***', text)
+        # Improved regex to handle dash-separated OpenAI project/api keys and bot tokens
+        redacted = re.sub(r'(sk-[a-zA-Z0-9_-]{20,})', '***REDACTED_API_KEY***', text)
         redacted = re.sub(r'(\d{9,10}:[a-zA-Z0-9_-]{35})', '***REDACTED_BOT_TOKEN***', redacted)
         return redacted
 
