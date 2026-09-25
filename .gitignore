@@ -10,3 +10,8 @@ workspace/active/*
 workspace/completed/*
 workspace/failed/*
 data/experiences/*
+
+backups/
+*.before_*
+*.pre_noxia_ui
+*.db

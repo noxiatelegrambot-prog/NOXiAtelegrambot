@@ -1,1 +1,0 @@
-# NOXiA Telegram UI Module
