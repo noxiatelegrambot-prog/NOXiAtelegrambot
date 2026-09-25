@@ -53,3 +53,22 @@ def test_telegram_bot_handler(tmp_path):
         assert "Summarized" in reply2
 
     asyncio.run(run())
+
+
+def test_system_metrics_tracking(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        from app.bot.service import BotService
+        from app.memory.database import get_system_metrics
+
+        service = BotService(database_path=database)
+        await service.handle_message("task-m-1", "research performance metrics")
+        
+        metrics = await get_system_metrics(database)
+        assert metrics["total_memories"] >= 2
+        assert metrics["total_runs"] >= 1
+        assert metrics["success_rate"] == 100.0
+
+    asyncio.run(run())

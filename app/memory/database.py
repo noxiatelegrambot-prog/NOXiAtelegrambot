@@ -341,3 +341,19 @@ async def get_memories(database_path: Path, task_id: str) -> list:
         ) as cursor:
             rows = await cursor.fetchall()
             return [dict(row) for row in rows]
+
+
+async def get_system_metrics(database_path: Path) -> dict:
+    async with aiosqlite.connect(database_path) as db:
+        async with db.execute("SELECT COUNT(*) FROM memories") as cursor:
+            mem_count = (await cursor.fetchone())[0]
+        async with db.execute("SELECT COUNT(*) FROM agent_runs") as cursor:
+            runs_count = (await cursor.fetchone())[0]
+        async with db.execute("SELECT COUNT(*) FROM agent_runs WHERE success = 1") as cursor:
+            success_count = (await cursor.fetchone())[0]
+        return {
+            "total_memories": mem_count,
+            "total_runs": runs_count,
+            "successful_runs": success_count,
+            "success_rate": (success_count / runs_count * 100) if runs_count > 0 else 0.0
+        }
