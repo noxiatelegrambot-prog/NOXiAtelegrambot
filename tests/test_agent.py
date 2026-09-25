@@ -78,3 +78,34 @@ def test_faulty_agent_error_handling(tmp_path):
         assert "Intentional failure for testing" in runs[0]["output_text"]
 
     asyncio.run(run())
+
+
+def test_workflow_with_faulty_agent_integration(tmp_path):
+    async def run():
+        database = tmp_path / "test.db"
+        await initialize_memory(database)
+
+        from app.agent.core import ResearcherAgent, FaultyTestAgent
+        from app.memory.database import get_agent_runs
+
+        task_id = "task-integration-001"
+        researcher = ResearcherAgent(name="researcher", database_path=database)
+        faulty = FaultyTestAgent(name="faulty_worker", database_path=database)
+
+        # 1. Successful research step
+        res = await researcher.execute(task_id, "Analyze failure vectors")
+        assert "Researched topic" in res
+
+        # 2. Subsequent faulty step that fails gracefully and records audit log
+        with pytest.raises(ValueError):
+            await faulty.execute(task_id, "fail operation")
+
+        # Verify full audit trail for the task containing both success and failure runs
+        runs = await get_agent_runs(database, task_id=task_id)
+        assert len(runs) == 2
+        assert runs[0]["agent"] == "researcher"
+        assert runs[0]["success"] is True
+        assert runs[1]["agent"] == "faulty_worker"
+        assert runs[1]["success"] is False
+
+    asyncio.run(run())
