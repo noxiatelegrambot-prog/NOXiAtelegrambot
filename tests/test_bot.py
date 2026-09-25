@@ -128,3 +128,22 @@ def test_experience_learning_system():
     assert row[0] == "optimization"
     assert row[1] == 4.5
     conn.close()
+
+
+def test_agent_orchestrator_task_queue():
+    import sqlite3
+    conn = sqlite3.connect("noxia.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO agent_tasks (agent_name, task_payload, status, priority) VALUES (?, ?, ?, ?)",
+        ("Researcher", "Analyze recent repository commits", "pending", 2)
+    )
+    conn.commit()
+
+    cursor.execute("SELECT agent_name, status, priority FROM agent_tasks WHERE agent_name = 'Researcher' ORDER BY id DESC LIMIT 1")
+    row = cursor.fetchone()
+    assert row is not None
+    assert row[0] == "Researcher"
+    assert row[1] == "pending"
+    assert row[2] == 2
+    conn.close()
