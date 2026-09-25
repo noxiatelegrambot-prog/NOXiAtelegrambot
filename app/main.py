@@ -16,7 +16,17 @@ from app.ai.providers import AIRouter
 from app.brain.orchestrator import Orchestrator
 from app.config import load_settings
 from app.memory.database import initialize_memory
-from app.ui.keyboards import get_complete_main_dashboard_keyboard
+from app.ui.keyboards import (
+    get_complete_main_dashboard_keyboard,
+    get_main_dashboard_keyboard,
+    get_task_type_keyboard,
+    get_ai_hub_keyboard,
+    get_memory_hub_keyboard,
+    get_learning_hub_keyboard,
+    get_research_hub_keyboard,
+    get_dev_hub_keyboard,
+    get_system_hub_keyboard,
+)
 from app.core.intent_transmuter import IntentTransmuter
 from app.core.dialogue_engine import DialogueEngine
 from app.core.intent_transmuter import IntentTransmuter
@@ -169,6 +179,29 @@ async def callback_handler(
     await query.answer()
 
     data = query.data or ""
+
+    menus = {
+        "menu_main": ("🏠 NOXiA Ana Menü", get_main_dashboard_keyboard),
+        "menu_new_task": ("🚀 Yeni Görev", get_task_type_keyboard),
+        "menu_tasks": ("📋 Görevler", get_task_type_keyboard),
+        "menu_ai_hub": ("⚡ AI Merkezi", get_ai_hub_keyboard),
+        "menu_memory": ("🧠 Bellek & Öğrenme", get_memory_hub_keyboard),
+        "menu_research": ("🔍 Araştırma", get_research_hub_keyboard),
+        "menu_developer": ("💻 Geliştirici", get_dev_hub_keyboard),
+        "menu_test_center": ("🧪 Test Merkezi", get_task_type_keyboard),
+        "menu_system": ("⚙️ Sistem", get_system_hub_keyboard),
+    }
+
+    if data in menus:
+        title, keyboard_fn = menus[data]
+        rows = keyboard_fn()
+        markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton(t, callback_data=c) for t, c in row]
+            for row in rows
+        ])
+        await query.edit_message_text(title, reply_markup=markup)
+        return
+
 
     if data.startswith("mode:"):
         mode = data.split(":", 1)[1]
