@@ -110,3 +110,21 @@ def test_memory_system_schema_and_crud():
     assert row[0] == "NOXiA memory system test entry"
     assert row[1] == 5
     conn.close()
+
+
+def test_experience_learning_system():
+    import sqlite3
+    conn = sqlite3.connect("noxia.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO experiences (task_type, input_data, outcome, score) VALUES (?, ?, ?, ?)",
+        ("optimization", "test input", "successful outcome", 4.5)
+    )
+    conn.commit()
+
+    cursor.execute("SELECT task_type, score FROM experiences ORDER BY id DESC LIMIT 1")
+    row = cursor.fetchone()
+    assert row is not None
+    assert row[0] == "optimization"
+    assert row[1] == 4.5
+    conn.close()
