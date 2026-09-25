@@ -4,8 +4,15 @@ import subprocess
 
 class SandboxManager:
     @staticmethod
+    def get_base_dir() -> str:
+        base_dir = os.path.expanduser("~/noxia_sandboxes")
+        os.makedirs(base_dir, exist_ok=True)
+        return base_dir
+
+    @staticmethod
     def create_sandbox(task_id: str) -> dict:
-        sandbox_path = f"/tmp/noxia_sandbox_{task_id}"
+        base_dir = SandboxManager.get_base_dir()
+        sandbox_path = os.path.join(base_dir, f"noxia_sandbox_{task_id}")
         os.makedirs(sandbox_path, exist_ok=True)
         return {
             "status": "success",
