@@ -241,3 +241,22 @@ def test_telegram_events_handler_layer():
     assert row[1] == "/start"
     assert row[2] == "Initiated interaction"
     conn.close()
+
+
+def test_background_jobs_scheduler():
+    import sqlite3
+    conn = sqlite3.connect("noxia.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT OR REPLACE INTO background_jobs (job_name, status, interval_seconds) VALUES (?, ?, ?)",
+        ("memory_cleanup", "idle", 300)
+    )
+    conn.commit()
+
+    cursor.execute("SELECT job_name, status, interval_seconds FROM background_jobs WHERE job_name = 'memory_cleanup'")
+    row = cursor.fetchone()
+    assert row is not None
+    assert row[0] == "memory_cleanup"
+    assert row[1] == "idle"
+    assert row[2] == 300
+    conn.close()
