@@ -284,7 +284,7 @@ async def message_handler(
         return
 
     # Sadece gerçek görevler Orchestrator'a gider.
-    intent = intent_router.transmute(prompt)
+    intent = intent_router.transmute(raw_prompt)
     logger.info("Intent routed | intent=%s | action=%s | confidence=%s",
                 intent.get("intent"), intent.get("transmuted_action"),
                 intent.get("confidence"))
