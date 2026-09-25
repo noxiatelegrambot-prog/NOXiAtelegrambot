@@ -1,3 +1,1 @@
-from app.ai.providers import AIRouter
-
-__all__ = ["AIRouter"]
+# AI package initializer
