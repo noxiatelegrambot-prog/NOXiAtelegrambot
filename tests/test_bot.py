@@ -165,3 +165,22 @@ def test_tool_registry_and_routing():
     assert row[0] == "code_analyzer"
     assert row[1] == 1
     conn.close()
+
+
+def test_session_context_management():
+    import sqlite3
+    conn = sqlite3.connect("noxia.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT OR REPLACE INTO chat_sessions (session_id, user_id, context_summary, is_active) VALUES (?, ?, ?, ?)",
+        ("sess_999", "user_123", "Initial context summary for multi-turn chat", 1)
+    )
+    conn.commit()
+
+    cursor.execute("SELECT session_id, user_id, context_summary FROM chat_sessions WHERE session_id = 'sess_999'")
+    row = cursor.fetchone()
+    assert row is not None
+    assert row[0] == "sess_999"
+    assert row[1] == "user_123"
+    assert row[2] == "Initial context summary for multi-turn chat"
+    conn.close()
