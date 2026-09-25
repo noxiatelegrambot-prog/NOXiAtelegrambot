@@ -182,3 +182,24 @@ def test_dev_hub_screens():
     assert "Quality Score:" in analysis_scr
     assert "92/100" in analysis_scr
     assert "Optimize imports" in analysis_scr
+
+from app.ui.keyboards import get_system_hub_keyboard, CB_SYS_LOGS
+from app.ui.screens import render_system_hub_screen, render_system_metrics_screen
+
+def test_system_hub_keyboards():
+    kb = get_system_hub_keyboard()
+    flat_cbs = [cb for row in kb for _, cb in row]
+    assert CB_SYS_LOGS in flat_cbs
+
+def test_system_hub_screens():
+    hub_scr = render_system_hub_screen()
+    assert "System Management & Operations" in hub_scr
+
+    metrics_scr = render_system_metrics_screen(12.5, 240.0, 4.85, "3d 14h")
+    assert "CPU Usage:" in metrics_scr
+    assert "12.5%" in metrics_scr
+    assert "RAM Usage:" in metrics_scr
+    assert "240.0 MB" in metrics_scr
+    assert "Database Size:" in metrics_scr
+    assert "4.85 MB" in metrics_scr
+    assert "3d 14h" in metrics_scr

@@ -135,3 +135,15 @@ def get_dev_hub_keyboard():
         [("🚀 Yama Uygula", CB_DEV_APPLY), ("⬅️ Geri", CB_BACK)],
         [("🏠 Ana Menü", CB_MAIN)]
     ]
+
+# System Management callback constants
+CB_SYS_LOGS = "system_view_logs"
+CB_SYS_METRICS = "system_view_metrics"
+CB_SYS_EMERGENCY_STOP = "system_emergency_stop"
+
+def get_system_hub_keyboard():
+    return [
+        [("📜 Sistem Logları", CB_SYS_LOGS), ("📊 Sistem Metrikleri", CB_SYS_METRICS)],
+        [("🛑 Acil Durdurma", CB_SYS_EMERGENCY_STOP), ("⬅️ Geri", CB_BACK)],
+        [("🏠 Ana Menü", CB_MAIN)]
+    ]

@@ -178,3 +178,21 @@ def render_code_analysis_screen(filename: str, issues_count: int, quality_score:
         f"💡 **Suggestions:**\n{sug_text}\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     )
+
+def render_system_hub_screen() -> str:
+    return (
+        "⚙️ **System Management & Operations**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "Monitor runtime logs, server metrics, and emergency controls:"
+    )
+
+def render_system_metrics_screen(cpu_pct: float, ram_mb: float, db_size_mb: float, uptime: str) -> str:
+    return (
+        "📊 **System Metrics & Health**\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"💻 **CPU Usage:** {cpu_pct:.1f}%\n"
+        f"🧠 **RAM Usage:** {ram_mb:.1f} MB\n"
+        f"🗄️ **Database Size:** {db_size_mb:.2f} MB\n"
+        f"⏱️ **Uptime:** {uptime}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    )
